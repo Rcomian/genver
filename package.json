@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Rcomian/node-genver.git"
+    "url": "git://github.com/Rcomian/genver.git"
   },
   "_id": "genver@1.0.0",
   "dependencies": {},
