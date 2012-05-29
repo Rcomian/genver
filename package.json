@@ -1,0 +1,26 @@
+{
+  "name": "genver",
+  "version": "1.0.0",
+  "description": "Gentoo compatible version comparison.",
+  "main": "genver.js",
+  "scripts": {
+    "test": "mocha -u tdd test.js"
+  },
+  "devDependencies": {
+    "mocha": ">=0.14.0"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "https://raw.github.com/Rcomian/genver/master/LICENSE"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Rcomian/node-genver.git"
+  },
+  "_id": "genver@1.0.0",
+  "dependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
