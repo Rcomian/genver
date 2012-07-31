@@ -1,7 +1,7 @@
 // Returns -1 if A is the greater version number
 // Returns 1 if B is the greater version number
 // Returns 0 if A & B are the same version number
-// Returns NaN if either A or B are invalid version numbers
+// Returns null if either A or B are invalid version numbers
 function compareVersion(A, B) {
 	var Atype = typeof(A) === 'object';
 	var Btype = typeof(B) === 'object';
@@ -10,21 +10,21 @@ function compareVersion(A, B) {
 	var Bn = Btype ? B : parseVersion(B);
 
 	if (An.invalid || Bn.invalid) {
-		return Nan;
+		return null;
 	}
 	
 	var result = compareNumerics(An, Bn);
-	if (result != 0) {
+	if (result !== 0) {
 		return result;
 	}
 	
 	result = compareLetter(An, Bn);
-	if (result != 0) {
+	if (result !== 0) {
 		return result;
 	}
 	
 	result = compareSuffix(An, Bn);
-	if (result != 0) {
+	if (result !== 0) {
 		return result;
 	}
 	
@@ -55,34 +55,38 @@ function parseVersion (V) {
 		remainder = split.remainder;
 	}
 	
+    function addArray(item, arrayName) {
+        return item[arrayName] = [];
+    }
+    
 	// Get all the additional numeric parts into the numerics array
-	var split = splitDotNumeric(remainder);
+	split = splitDotNumeric(remainder);
 	while (split) {
-		(result.numerics || function () { return result.numerics = []; }()).push(split.numeric);
+		(result.numerics || addArray(result, 'numeric')).push(split.numeric);
 		remainder = split.remainder;
 		
 		split = splitDotNumeric(remainder);
 	}
 	
 	// Split out the letter if there is one
-	var split = splitLetter(remainder);
-	if (split != null) {
+	split = splitLetter(remainder);
+	if (split !== null) {
 		result.letter = split.letter;
 		remainder = split.remainder;
 	}
 
 	// Process our suffixes if there are any
-	var split = splitSuffix(remainder);
-	while (split != null) {
-		(result.suffixes || function () { return result.suffixes = []; }()).push(split.suffix);
+	split = splitSuffix(remainder);
+	while (split !== null) {
+		(result.suffixes || addArray(result, 'suffixes')).push(split.suffix);
 		remainder = split.remainder;
 		
 		split = splitSuffix(remainder);
 	}
 	
 	// Process release indicator if any
-	var split = splitRevision(remainder);
-	if (split != null) {
+	split = splitRevision(remainder);
+	if (split !== null) {
 		result.revision = split.revision;
 		remainder = split.remainder;
 	}
@@ -97,7 +101,7 @@ function parseVersion (V) {
 
 function splitDotNumeric(V) {
 	var result = /^\.([0-9]+)/.exec(V);
-	if (result == null || result.length != 2) {
+	if (result === null || result.length != 2) {
 		return null;
 	} else {
 		return {
@@ -109,7 +113,7 @@ function splitDotNumeric(V) {
 
 function splitRevision(V) {
 	var result = /^-r([0-9]+)/.exec(V);
-	if (result == null || result.length != 2) {
+	if (result === null || result.length != 2) {
 		return null;
 	} else {
 		return {
@@ -121,7 +125,7 @@ function splitRevision(V) {
 
 function splitSuffix(V) {
 	var result = /^(_alpha|_beta|_pre|_rc|_p)([0-9]*)/.exec(V);
-	if (result == null || result.length != 3) {
+	if (result === null || result.length != 3) {
 		return null;
 	} else {
 		return {
@@ -129,14 +133,14 @@ function splitSuffix(V) {
 				type: result[1].slice(1),
 				value: result[2]
 			},
-			remainder: V == result[0] ? '' : V.slice(-1 * (V.length - result[0].length)),
+			remainder: V === result[0] ? '' : V.slice(-1 * (V.length - result[0].length))
 		};
 	}
 }
 
 function splitNumeric(V) {
 	var result = /^[0-9]+/.exec(V);
-	if (result == null || result.length != 1) {
+	if (result === null || result.length != 1) {
 		return null;
 	} else {
 		return {
@@ -148,7 +152,7 @@ function splitNumeric(V) {
 
 function splitLetter(V) {
 	var result = /^[a-z]/.exec(V);
-	if (result == null || result.length != 1) {
+	if (result === null || result.length != 1) {
 		return null;
 	} else {
 		return {
@@ -159,7 +163,7 @@ function splitLetter(V) {
 }
 
 function isAllNumeric(V) {
-	return /^[0-9]*$/.test(V);
+	return (/^[0-9]*$/).test(V);
 }
 
 var SUFFIXVALUES = {
@@ -168,7 +172,7 @@ var SUFFIXVALUES = {
 	'pre' : 2,
 	'rc' : 3,
 	'p' : 4
-}
+};
 
 function compareRevision(An, Bn) {
 	return integerCompare(An.revision || '0', Bn.revision || '0');
@@ -179,13 +183,13 @@ function compareSuffix(An, Bn) {
 		AnSuffixLength = An.suffixes ? An.suffixes.length : 0,
 		BnSuffixLength = Bn.suffixes ? Bn.suffixes.length : 0;
 		
-	for (var i = 0; i < Math.min(AnSuffixLength, BnSuffixLength); i++) {
+	for (i = 0; i < Math.min(AnSuffixLength, BnSuffixLength); i++) {
 		var As = SUFFIXVALUES[An.suffixes[i].type];
 		var Bs = SUFFIXVALUES[Bn.suffixes[i].type];
 		
 		if (As === Bs) {
 			var result = integerCompare(An.suffixes[i].value, Bn.suffixes[i].value);
-			if (result != 0) {
+			if (result !== 0) {
 				return result;
 			}
 		} else if (As < Bs) {
@@ -225,13 +229,13 @@ function compareLetter(An, Bn) {
 
 function compareNumerics(An, Bn) {
 	if (An.invalid || Bn.invalid) {
-		return NaN;
+		return null;
 	}
 
 	// Compare the first numeric of each version with integer comparison
 	var result = integerCompare(An.numerics[0], Bn.numerics[0]);
 	
-	if (result != 0) {
+	if (result !== 0) {
 		return result;
 	}
 
@@ -241,12 +245,12 @@ function compareNumerics(An, Bn) {
 	// Compare each subsequent numeric with numeric comparison
 	for (var i = 1; i < Math.min(Ann, Bnn); i++) {
 		result = numericCompare(An.numerics[i], Bn.numerics[i]);
-		if (result != 0) {
+		if (result !== 0) {
 			return result;
 		}
 	}
 	
-	if (result != 0) {
+	if (result !== 0) {
 		return result;
 	}
 	
@@ -314,7 +318,7 @@ function integerCompare(A, B) {
 
 function stripLeadingZeros(V) {
 	var result = /^0*([0-9][0-9]*)/.exec(V);
-	if (result == null || result.length != 2) {
+	if (result === null || result.length != 2) {
 		return V || '';
 	} else {
 		return result[1];
@@ -322,7 +326,7 @@ function stripLeadingZeros(V) {
 }
 
 function stripTrailingZeros(V) {
-	if (V.length == 0) {
+	if (V.length === 0) {
 		return V;
 	}
 	
