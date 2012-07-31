@@ -37,14 +37,6 @@ function compareVersion(A, B) {
 // the object is more useful for comparisons 
 function parseVersion (V) {
 	var result = {};
-//		invalid: false,
-//		invalidText: '',
-//		original: V,
-//		numerics: [],
-//		letter: '',
-//		suffixes: [],
-//		revision: 0
-//	};
 	
 	var remainder = V;
 	
